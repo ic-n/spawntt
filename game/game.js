@@ -1,4 +1,3 @@
-// Constants for easy configuration
 const SAFE_TOP = 100
 const GRID_LINES_ENEMY = 16
 const GRID_LINES_TOWER = 8
@@ -91,14 +90,6 @@ const Score = (() => {
             localScore = normalizedScore
             currentScore = normalizedScore !== undefined ? normalizedScore : currentScore
 
-            for (const [dev, ns] of Object.entries(data.Normalised)) {
-                if (dev == deviceID) {
-                    continue
-                }
-
-                currentScore += ns
-            }
-
             updateDisplay()
 
             return normalizedScore
@@ -144,7 +135,6 @@ function setup() {
     ENEMY_SIZE = windowHeight / GRID_LINES_ENEMY
     TOWER_RANGE = ENEMY_SIZE * 3
 
-    window.Telegram.WebApp.expand()
     createCanvas(windowWidth, windowHeight - document.getElementById('topbar').offsetHeight)
 
     const towerImages = document.querySelectorAll('.icontype')
@@ -329,7 +319,7 @@ function handleInteraction(x, y) {
         return
     }
 
-    clickerctions+=1
+    clickerctions += 1
 
     if (gameOver) {
         restartGame()
@@ -668,3 +658,46 @@ function getInterpolatedColor(value) {
 
     return rgbaToHex(interpolatedColor)
 }
+
+window.addEventListener("load", () => {
+    function saveKeypairToLocalStorage(secretKeyArray) {
+        localStorage.setItem("solanaSecretKey", JSON.stringify(Array.from(secretKeyArray)));
+    }
+
+    function loadKeypairFromLocalStorage() {
+        const storedSecretKey = localStorage.getItem("solanaSecretKey");
+        if (storedSecretKey) {
+            try {
+                const secretKeyArray = JSON.parse(storedSecretKey);
+                return solanaWeb3.Keypair.fromSecretKey(new Uint8Array(secretKeyArray));
+            } catch (error) {
+                console.error("Error loading keypair from localStorage:", error);
+            }
+        }
+        return null;
+    }
+
+    function generateOrLoadKeypair() {
+        let keypair = loadKeypairFromLocalStorage();
+
+        if (!keypair) {
+            console.log("No keypair found. Generating a new one...");
+            keypair = solanaWeb3.Keypair.generate();
+            saveKeypairToLocalStorage(keypair.secretKey);
+        } else {
+            console.log("Loaded existing keypair from localStorage.");
+        }
+
+        return keypair;
+    }
+
+    const solanaWeb3 = window.solanaWeb3;
+
+    const keypair = generateOrLoadKeypair();
+    const secretKeyBase64 = btoa(String.fromCharCode(...keypair.secretKey));
+
+    const addy = keypair.publicKey.toBase58()
+    document.getElementById("addr").textContent = addy.slice(0, 4) + "…" + addy.slice(addy.length - 4, addy.length) 
+
+    
+})

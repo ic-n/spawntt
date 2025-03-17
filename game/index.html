@@ -4,6 +4,7 @@
 <head>
   <script src="p5.min.js"></script>
   <script src="p5.sound.min.js"></script>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
   <script src="game.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +49,7 @@
       background-repeat: no-repeat;
     }
 
+    #addr,
     #scorecontainer,
     #gg {
       font-family: "Tiny5", sans-serif;
@@ -65,6 +67,10 @@
       color: #FAEBD7;
       animation: shake 1.5s infinite, pulse 2s infinite;
       cursor: pointer;
+    }
+
+    #addr {
+      color: #FAEBd7;
     }
 
     @keyframes shake {
@@ -191,6 +197,13 @@
     .icontype.active {
       outline: 2px solid #FAEBD7;
     }
+
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
   </style>
 </head>
 
@@ -199,7 +212,14 @@
   <div id="ontop">
     <div id="topbar">
       <span id="title">Shrouds</span>
-      <span id="scorecontainer"><span id="score">0</span> bone shards</span>
+      <div class="flex-row" style="padding: 0rem 1rem;">
+        <div><span id="scorecontainer"><span id="score">0</span> bone shards</span></div>
+        <div class="flex-row" style="background-color: #FAEBD720; border-radius: 1rem; padding: .5rem .5rem;">
+          <img style="width: 1.5rem; margin-right: .5rem;" src="svm.avif" alt="">
+          <pre id="addr" style="margin: 0;"></pre>
+        </div>
+      </div>
+      
       <div id="towertypecontainer">
         <div class="icontype active" data-tower-type="0">
           <img src="hoodie/1080.png" alt="hoodie">
